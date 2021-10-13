@@ -1,15 +1,7 @@
 import random
-import selenium
 from selenium import webdriver
 import urllib.request
-from urllib.request import Request, urlopen
-import requests
-import wget
-import sys
 import time
-import subprocess
-import base64
-import os
 
 
 """Main function"""
