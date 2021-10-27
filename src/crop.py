@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 
 
 def detect_faces(image):
-"""Use dlib to detect faces and bounding boxes
-    ---------
-    args:
-    image: the image (in pixels) in which the faces are to be detected
-    ---------
-    returns: 
-    face_frames: the bounding boxes around the detected faces
-    len(detected_faces): the number of faces detected
+    """Use dlib to detect faces and bounding boxes
+        ---------
+        args:
+        image: the image (in pixels) in which the faces are to be detected
+        ---------
+        returns:
+        face_frames: the bounding boxes around the detected faces
+        len(detected_faces): the number of faces detected
 
-"""
+    """
 
     # Create a face detector
     face_detector = dlib.get_frontal_face_detector()
@@ -28,16 +28,16 @@ def detect_faces(image):
 
 
 def __init__(img_path, counter, destination):
-"""Initialize the detect and crop function
-    ---------
-    args:
-    img_path: the path to the image file that has to be cropped
-    counter: counter for counting the number of images cropped
-    destination: the path to the directory to save the cropped images
-    ---------
-    returns: 
-    a boolean value indicating whether the crop happened or not
-"""
+    """Initialize the detect and crop function
+        ---------
+        args:
+        img_path: the path to the image file that has to be cropped
+        counter: counter for counting the number of images cropped
+        destination: the path to the directory to save the cropped images
+        ---------
+        returns:
+        a boolean value indicating whether the crop happened or not
+    """
 
     image = io.imread(img_path)
 
