@@ -193,7 +193,7 @@ if __name__ == "__main__":
 		dest_path_img = args.dest_path_img
 		if not os.path.exists(dest_path_img):
 			os.makedirs(dest_path_img)
-			scrap(search_url, dest_path_img, driver_path)
+		scrap(search_url, dest_path_img, driver_path)
 	
 	# crop if cropping source directory and destination directory is given in args
 	if args.src_path_crop is not None and args.dest_path_crop is not None:
