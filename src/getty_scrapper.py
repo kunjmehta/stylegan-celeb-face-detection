@@ -1,9 +1,7 @@
-import random
 import argparse
 from selenium import webdriver
 import urllib.request
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image
 import os
 from crop import __init__
@@ -71,7 +69,7 @@ def scrap(search_url, dest_path):
 	browser.get(search_url)
 	#time.sleep(1)
 
-	# 15 pages at a time (can change)
+	# 500 pages at a time (can change)
 	while page_count <= 500:
 
 		# Getty classes change every day. Please change
@@ -84,7 +82,7 @@ def scrap(search_url, dest_path):
 
 			try:
 				e.click()
-				time.sleep(1)
+				time.sleep(0.5)
 
 				# clicking on image leads to new window. Tracking the window IDs
 				handles = browser.window_handles
