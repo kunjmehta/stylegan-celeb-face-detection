@@ -43,8 +43,12 @@ def define_arguments(parser):
 						dest = "dest_path_resize",
 						help = "Path to store resize images in")
 
+	# URL	
+	parser.add_argument("--driver", 
+						dest = "driver",
+						help = "Path to webdriver")
 
-def scrap(search_url, dest_path):
+def scrap(search_url, dest_path, driver_path):
 	""" Scrapping function
 		---------
 		args:
@@ -53,7 +57,7 @@ def scrap(search_url, dest_path):
 	"""
 
 	# path to chrome driver. Chrome is suggested. Change path here.
-	browser = webdriver.Chrome(executable_path = "./chromedriver.exe")
+	browser = webdriver.Chrome(executable_path = driver_path)
 
 	# Robbie
 	# Image count -  1338
@@ -182,11 +186,14 @@ if __name__ == "__main__":
 	# access search URL to scrap and path to store results in
 	search_url = args.search_url
 	dest_path_img = args.dest_path_img
+	driver_path = args.driver
 
 	# scrap if destination path is given in args
 	if args.dest_path_img is not None:
 		dest_path_img = args.dest_path_img
-		scrap(search_url, dest_path_img)
+		if not os.path.exists(dest_path_img):
+			os.makedirs(dest_path_img)
+			scrap(search_url, dest_path_img, driver_path)
 	
 	# crop if cropping source directory and destination directory is given in args
 	if args.src_path_crop is not None and args.dest_path_crop is not None:
