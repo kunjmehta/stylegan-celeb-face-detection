@@ -9,11 +9,11 @@ import os
 from crop import __init__
 
 def define_arguments(parser):
-""" CLI Arguments Definition
-	--------
-	args:
-	parser: the argument parser object
-"""
+	""" CLI Arguments Definition
+		--------
+		args:
+		parser: the argument parser object
+	"""
 
 	# URL	
 	parser.add_argument("--url", 
@@ -47,20 +47,20 @@ def define_arguments(parser):
 
 
 def scrap(search_url, dest_path):
-""" Scrapping function
-	---------
-	args:
-	search_url: URL for scrapping
-	dest_path: path to folder where images have to be saved
-"""
+	""" Scrapping function
+		---------
+		args:
+		search_url: URL for scrapping
+		dest_path: path to folder where images have to be saved
+	"""
 
 	# path to chrome driver. Chrome is suggested. Change path here.
-	browser = webdriver.Chrome(executable_path = "D:/Projects/stylegan-celeb-face-detection/chromedriver.exe")
+	browser = webdriver.Chrome(executable_path = "./chromedriver.exe")
 
 	# Robbie
 	# Image count -  1338
 	# Page count - from pg. 40
-	count = 1338	
+	count = 0	
 	page_count = 0
 
 	# scroll trackers (if needed)
@@ -69,10 +69,10 @@ def scrap(search_url, dest_path):
 	
 	# start scrapping
 	browser.get(search_url)
-	time.sleep(1)
+	#time.sleep(1)
 
 	# 15 pages at a time (can change)
-	while page_count <= 15:
+	while page_count <= 50:
 
 		# Getty classes change every day. Please change
 		elements = browser.find_elements_by_class_name("MosaicAsset-module__thumb___epLhd")
@@ -80,11 +80,11 @@ def scrap(search_url, dest_path):
 
 		for e in elements:
 			handles = []
-			time.sleep(1)
+			time.sleep(0.5)
 
 			try:
 				e.click()
-				time.sleep(2)
+				time.sleep(1)
 
 				# clicking on image leads to new window. Tracking the window IDs
 				handles = browser.window_handles
@@ -93,7 +93,7 @@ def scrap(search_url, dest_path):
 				# waiting for new window to load
 				
 				# element = WebDriverWait(driver, 10).until( EC.presence_of_element_located((By.Class, "asset-card__image")))
-				time.sleep(2)
+				time.sleep(1)
 
 				# while True:
 				# 	handles = browser.window_handles
@@ -112,7 +112,7 @@ def scrap(search_url, dest_path):
 				
 				# switch back to main window
 				browser.close()
-				time.sleep(1)
+				#time.sleep(1)
 				browser.switch_to.window(main_window)
 
 			except Exception as e:
@@ -129,12 +129,12 @@ def scrap(search_url, dest_path):
 
 
 def resize(source, destination):
-""" Resizing function
-	---------
-	args:
-	source: source directory for images that need to be resized
-	destination: destination directory for images that need to be resized
-"""
+	""" Resizing function
+		---------
+		args:
+		source: source directory for images that need to be resized
+		destination: destination directory for images that need to be resized
+	"""
 	counter = 0
 
 	for root, directories, files in os.walk(source):
@@ -153,12 +153,12 @@ def resize(source, destination):
 
 
 def crop(source, destination):
-""" Cropping function
-	---------
-	args:
-	source: source directory for images that need to be cropped
-	destination: destination directory for images that need to be cropped
-"""
+	""" Cropping function
+		---------
+		args:
+		source: source directory for images that need to be cropped
+		destination: destination directory for images that need to be cropped
+	"""
 	for root, directories, files in os.walk(source):
 		counter = 1
 		for file in files:
@@ -174,7 +174,7 @@ def crop(source, destination):
 
 
 if __name__ == "__main__":
-"""Main function"""
+	"""Main function"""
 
 	# define and build a argument parser
 	parser = argparse.ArgumentParser()
