@@ -2,3 +2,4 @@
 env/
 dataset
 src/__pycache__
+./src/geckodriver.log
