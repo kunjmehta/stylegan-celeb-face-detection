@@ -72,7 +72,7 @@ def scrap(search_url, dest_path):
 	#time.sleep(1)
 
 	# 15 pages at a time (can change)
-	while page_count <= 50:
+	while page_count <= 500:
 
 		# Getty classes change every day. Please change
 		elements = browser.find_elements_by_class_name("MosaicAsset-module__thumb___epLhd")
