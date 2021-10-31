@@ -148,7 +148,11 @@ def resize(source, destination):
 				counter += 1
 				try:
 					img = Image.open(source+file)
-					img1 = img.resize((128,128))
+					width, height = img.size
+					c = 128
+					if width < c or height < c:
+						continue
+					img1 = img.resize((c,c))
 					# img1.show()
 					img1.save(destination + str(counter) + ".jpg")
 				except Exception as exc:
