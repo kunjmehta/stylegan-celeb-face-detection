@@ -1,4 +1,5 @@
 import argparse
+import hashlib
 from selenium import webdriver
 import urllib.request
 import time
@@ -43,7 +44,12 @@ def define_arguments(parser):
 						dest = "dest_path_resize",
 						help = "Path to store resize images in")
 
-	# URL	
+	# Remove duplicates source
+	parser.add_argument("--src-dup", 
+						dest = "src_path_dup",
+						help = "Path to remove duplicates from")
+
+	# Webdriver	
 	parser.add_argument("--driver", 
 						dest = "driver",
 						help = "Path to webdriver")
@@ -174,6 +180,32 @@ def crop(source, destination):
 					print("Error while cropping", os.path.join(root, file), exc)
 					continue
 
+def calc_checksum(file_name):
+	"""
+	Function to calculate the checksum of a file
+	file_name: path to file
+	"""
+	with open(file=file_name, encoding='ISO-8859-1') as f:
+	    return str(hashlib.blake2b(f.read().encode('utf-8')).hexdigest())
+    
+def remove_duplicates(source):
+	"""
+	Function to remove duplicate copies of a file from a directory
+	source: source directory
+	"""
+	hash_dict = {}
+	with os.scandir(source) as iter:
+	    for entry in iter:
+	        if entry.name.endswith(".jpg") and entry.is_file():
+	            checksum = calc_checksum(entry.path)
+	            if checksum not in hash_dict:
+	                hash_dict[checksum] = [entry.path]
+	            else:
+	                hash_dict[checksum] += [entry.path]
+	for (key, val) in hash_dict.items():
+	    if len(val) > 1:
+	        for path in val[1:]:
+	            os.remove(path)
 
 if __name__ == "__main__":
 	"""Main function"""
@@ -195,6 +227,11 @@ if __name__ == "__main__":
 			os.makedirs(dest_path_img)
 		scrap(search_url, dest_path_img, driver_path)
 	
+	# Remove duplicates if source path is given in args
+	if args.src_path_dup:
+		src_path_dup = args.src_path_dup
+		remove_duplicates(src_path_dup)
+
 	# crop if cropping source directory and destination directory is given in args
 	if args.src_path_crop is not None and args.dest_path_crop is not None:
 		src_path_crop = args.src_path_crop
@@ -206,4 +243,3 @@ if __name__ == "__main__":
 		src_path_resize = args.src_path_resize
 		dest_path_resize = args.dest_path_resize
 		resize(src_path_resize, dest_path_resize)
-
