@@ -54,7 +54,13 @@ def define_arguments(parser):
 						dest = "driver",
 						help = "Path to webdriver")
 
-def scrap(search_url, dest_path, driver_path):
+	# Image Count	
+	parser.add_argument("--count", 
+						dest = "count",
+						default = 0,
+						help = "Image count. Defaults to 0")
+
+def scrape(search_url, dest_path, driver_path, img_count):
 	""" Scrapping function
 		---------
 		args:
@@ -68,7 +74,7 @@ def scrap(search_url, dest_path, driver_path):
 	# Robbie
 	# Image count -  1338
 	# Page count - from pg. 40
-	count = 0	
+	count = img_count	
 	page_count = 0
 
 	# scroll trackers (if needed)
@@ -92,7 +98,7 @@ def scrap(search_url, dest_path, driver_path):
 
 			try:
 				e.click()
-				time.sleep(0.5)
+				time.sleep(1)
 
 				# clicking on image leads to new window. Tracking the window IDs
 				handles = browser.window_handles
@@ -101,16 +107,7 @@ def scrap(search_url, dest_path, driver_path):
 				# waiting for new window to load
 				
 				# element = WebDriverWait(driver, 10).until( EC.presence_of_element_located((By.Class, "asset-card__image")))
-				time.sleep(1)
-
-				# while True:
-				# 	handles = browser.window_handles
-				# 	print(handles)
-				# 	if len(handles) > 1:
-				# 		break
-
-				# time.sleep(10)
-				# browser.switch_to.window(handles[1])
+				time.sleep(1.5)
  
 				# save image (not thumbnail)
 				image = browser.find_element_by_class_name("asset-card__image")
@@ -186,8 +183,8 @@ def calc_checksum(file_name):
 	file_name: path to file
 	"""
 	with open(file=file_name, encoding='ISO-8859-1') as f:
-	    return str(hashlib.blake2b(f.read().encode('utf-8')).hexdigest())
-    
+		return str(hashlib.blake2b(f.read().encode('utf-8')).hexdigest())
+	
 def remove_duplicates(source):
 	"""
 	Function to remove duplicate copies of a file from a directory
@@ -195,17 +192,17 @@ def remove_duplicates(source):
 	"""
 	hash_dict = {}
 	with os.scandir(source) as iter:
-	    for entry in iter:
-	        if entry.name.endswith(".jpg") and entry.is_file():
-	            checksum = calc_checksum(entry.path)
-	            if checksum not in hash_dict:
-	                hash_dict[checksum] = [entry.path]
-	            else:
-	                hash_dict[checksum] += [entry.path]
+		for entry in iter:
+			if entry.name.endswith(".jpg") and entry.is_file():
+				checksum = calc_checksum(entry.path)
+				if checksum not in hash_dict:
+					hash_dict[checksum] = [entry.path]
+				else:
+					hash_dict[checksum] += [entry.path]
 	for (key, val) in hash_dict.items():
-	    if len(val) > 1:
-	        for path in val[1:]:
-	            os.remove(path)
+		if len(val) > 1:
+			for path in val[1:]:
+				os.remove(path)
 
 if __name__ == "__main__":
 	"""Main function"""
@@ -215,17 +212,18 @@ if __name__ == "__main__":
 	define_arguments(parser)
 	args = parser.parse_args()
 
-	# access search URL to scrap and path to store results in
+	# access search URL to scrape and path to store results in
 	search_url = args.search_url
 	dest_path_img = args.dest_path_img
 	driver_path = args.driver
+	img_count = args.count
 
-	# scrap if destination path is given in args
+	# scrape if destination path is given in args
 	if args.dest_path_img is not None:
 		dest_path_img = args.dest_path_img
 		if not os.path.exists(dest_path_img):
 			os.makedirs(dest_path_img)
-		scrap(search_url, dest_path_img, driver_path)
+		scrape(search_url, dest_path_img, driver_path, img_count)
 	
 	# Remove duplicates if source path is given in args
 	if args.src_path_dup:
@@ -236,10 +234,14 @@ if __name__ == "__main__":
 	if args.src_path_crop is not None and args.dest_path_crop is not None:
 		src_path_crop = args.src_path_crop
 		dest_path_crop = args.dest_path_crop
+		if not os.path.exists(dest_path_crop):
+			os.makedirs(dest_path_crop)
 		crop(src_path_crop, dest_path_crop)
 	
 	# crop if resize source directory and destination directory is given in args
 	if args.src_path_resize is not None and args.dest_path_resize is not None:
 		src_path_resize = args.src_path_resize
 		dest_path_resize = args.dest_path_resize
+		if not os.path.exists(dest_path_resize):
+			os.makedirs(dest_path_resize)
 		resize(src_path_resize, dest_path_resize)
