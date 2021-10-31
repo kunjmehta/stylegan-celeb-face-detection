@@ -98,7 +98,7 @@ def scrape(search_url, dest_path, driver_path, img_count):
 
 			try:
 				e.click()
-				time.sleep(1)
+				time.sleep(0.5)
 
 				# clicking on image leads to new window. Tracking the window IDs
 				handles = browser.window_handles
@@ -107,7 +107,7 @@ def scrape(search_url, dest_path, driver_path, img_count):
 				# waiting for new window to load
 				
 				# element = WebDriverWait(driver, 10).until( EC.presence_of_element_located((By.Class, "asset-card__image")))
-				time.sleep(1.5)
+				time.sleep(1)
  
 				# save image (not thumbnail)
 				image = browser.find_element_by_class_name("asset-card__image")
@@ -190,20 +190,15 @@ def remove_duplicates(source):
 	Function to remove duplicate copies of a file from a directory
 	source: source directory
 	"""
-	hash_dict = {}
-	with os.scandir(source) as iter:
-		for entry in iter:
+	checksum_set = set()
+	with os.scandir(source) as iterator:
+		for entry in iterator:
 			if entry.name.endswith(".jpg") and entry.is_file():
 				checksum = calc_checksum(entry.path)
-				if checksum not in hash_dict:
-					hash_dict[checksum] = [entry.path]
-				else:
-					hash_dict[checksum] += [entry.path]
-	for (key, val) in hash_dict.items():
-		if len(val) > 1:
-			for path in val[1:]:
-				os.remove(path)
-
+				if checksum in checksum_set:
+					os.remove(entry.path)
+				checksum_set.add(checksum)
+				
 if __name__ == "__main__":
 	"""Main function"""
 
@@ -216,7 +211,7 @@ if __name__ == "__main__":
 	search_url = args.search_url
 	dest_path_img = args.dest_path_img
 	driver_path = args.driver
-	img_count = args.count
+	img_count = int(args.count)
 
 	# scrape if destination path is given in args
 	if args.dest_path_img is not None:
