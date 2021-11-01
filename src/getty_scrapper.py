@@ -29,6 +29,11 @@ def define_arguments(parser):
 						dest = "src_path_crop",
 						help = "Path to pickup images to crop from")
 
+	# Checking resolution
+	parser.add_argument("--src-res",
+						dest="src_path_res",
+						help="Path to pickup images to delete from")
+
 	# Cropping destination
 	parser.add_argument("--dest-crop", 
 						dest = "dest_path_crop",
@@ -132,6 +137,27 @@ def scrape(search_url, dest_path, driver_path, img_count):
 		nextbutton.click() 
 		print(page_count, count)
 
+def check_res(source):
+	"""
+		Checks for images of the wrong resolution.
+		Deletes files in place.
+		:param source:
+		:return:
+	"""
+	with os.scandir(source) as iterator:
+		for entry in iterator:
+			if entry.name.endswith(".jpg") and entry.is_file():
+				try:
+					img = Image.open(entry.path)
+					width, height = img.size
+					c = 128
+					if width is not c or height is not c:
+						os.remove(entry.path)
+				except Exception as exc:
+					print("Error while cropping", os.path.join(root, file), exc)
+					continue
+
+
 
 def resize(source, destination):
 	""" Resizing function
@@ -228,6 +254,11 @@ if __name__ == "__main__":
 	if args.src_path_dup:
 		src_path_dup = args.src_path_dup
 		remove_duplicates(src_path_dup)
+
+	# Remove bad res images if source path is given in args
+	if args.src_path_res:
+		src_path_res = args.src_path_res
+		check_res(src_path_res)
 
 	# crop if cropping source directory and destination directory is given in args
 	if args.src_path_crop is not None and args.dest_path_crop is not None:
